@@ -1,0 +1,42 @@
+jadi disini aku membuat sebuah website menggunakan laravel+database postgre untuk sistem pendaftaran, monitoring dan penilaian magang dilingkup kedinasan kota surabaya. user disini terdiri dari admin pusat, admin opd, admin pembimbing, tamu, pemohon, dan peserta. fitur dari user sendiri seperti ini
+
+admin pusat:
+1. pendaftar (pemohon akun baru untuk bisa mendaftar di instansi)
+2. manajemen opd (list opd yang telah tersedia, admin juga bisa menambah, menghapus dan menonaktifkan opd tertentu serta hanya bisa melihat informasi lengkap mengenai opd tersebut)
+3. dashboard (
+(jumlah pendaftar, peserta aktif, opd, pembimbing secara keseluruhan), statistic pendaftar magang setiap dinas, statistic peserta magang setiap dinas, notifikasi
+)
+
+admin opd:
+1. profile (informasi lengkap dari opd tersebut seperti jumlah pembimbing, peserta, lokasi, no.telp, jam operasional, Pendidikan, persyaratan dokumen, deskripsi tntang opd, dokumentasi, bidang yang tersedia dan mempunyai akses untuk mengedit informasi tersebut)
+2. pembimbing (bisa menambah/menghapus pembimbing, layaknya disini 1 pembimbing 1 bidang, berisi info lengkap seperti nama, bidang dan email)
+3. verifikasi (informasi lengkap dan proses verifikasi mengenai pendaftaran magang diopd tersebut)
+4. peserta (dapat melihat list peserta dan informasi lengkap data dirinya termasuk progress dan penilaian juga, bisa juga mengeluarkan peserta jikalau melanggar aturan tertentu)
+5. surat magang (melihat list siapa saja peserta yang mengajukan surat magang seperti surat diterima magang dan surat selesai magang)
+6. berita instansi (mengupload berita terbaru seputar instansi yang nantinya bisa dilihat oleh seluruh peserta magang)
+7. dashboard (
+(jumlah peserta, pembimbing, verifikasi, permohonan surat dilingkup opd), tempat untuk melihat, menghapus, mengedit berita instansi, notifikasi
+)
+
+admin pembimbing (1 bidang 1 admin):
+1. peserta (dapat melihat list peserta dan informasi lengkap data dirinya termasuk progress dan penilaian juga)
+2. presensi (melihat presensi dari seluruh peserta aktif sesuai bidang)
+3. progress (melihat progres serta memberikan keterangan aprroved atau revisi pada progres yang sedang berjalan juga dapat menambahkan catatan)
+4. penilaian (memberikan nilai kepada peserta(aspek yang dinilai kehadiran, ketepatan waktu, tugas selesai, ketepatan deadline, kemandirian), didalamnya juga dapat memperlihatkan hasil statistik dan rata" dari penilaian peserta tertentu)
+
+tamu:
+1. masuk ketampilan dashboard umum (navbar, hero, instansi yang tersedia, langkah" mendaftar magang, faq, footer)
+2. disini tamu tidak bisa mengajukan permohonan magang karena ia harus memiliki akun dulu dengan memasukkan data diri seperti nama, no.telp, email, passwoard
+
+pemohon:
+1. tampilan pemohon kurang lebih sama seperti tampilan tamu
+2. yang membedakan disini hanya pemohon sudah memiliki akun dan bisa untuk mengajukan permohonan magang diinstansi yang tersedia
+3. persyaratan untuk mengajukan magang disini ialah melengkapi data diri seperti (nama, no.telp, email, asal instansi, dinas tujuan, tanggal mulai-selesai), disini juga mengisi data diri peserta seperti (nama, no.telp, email, password, jurusan, bidang tujuan) peserta disini juga pemohon jadi mengisi minimal 1 peserta, tetapi pemohon bisa membawakan banyak peserta. analogi nya seperti pemohon ini menjadi ketua nya untuk mewakili anggotanya mengajukan magang, selanjutnya mengisi berkas sesuai persyaratan instansi nya, dan untuk informasi penerimaan akan dikirim pesan pada email pemohon bahwasannya dia diterima
+
+peserta:
+1. setelah menerima pesan penerimaan magang ia langsung masuk menggunakan email pemohon yang dibuat setelah menjadi tamu dan disini masuk ke dashboard akun Utama
+2. didalamnya terdapat(navbar, hero, pemberitahuan berita terkait instansi, informasi magang(periode, asal instansi, dinas, status akun), profile login(masuk ke dashboard peserta individu dengan syarat memasukkan password yang telah dibuat pada saat pengajuan magang dibagian peserta), footer)
+3. dashboard akun utama ini dipakai bersama seperti analogi yang saya jelaskan sebelumnya, jadi bisa dipakai lebih dari satu orang tergantung akun pemohon mengajukan berapa peserta
+4. setelah masuk ke dashboard peserta individu baru didalamnya ada data dari peserta masing", ini dashboard individu yang dipunyai masing" peserta. didalamnya ada fitur (profile(berisi informasi pribadi, persentase presensi, progres selesai, rata" nilai), presensi(berisi hari berjalan magang, tanggal/waktu otomatis, status kehadiran, bukti, keterangan, jumlah kehadiran, presentase kehadiran), progres(tanggal/waktu otomatis, judul, file, status, catatan), penilaian(berisi hasil nilai dari beberapa aspek sekaligus statistik serta rata rata nya), surat(berisi pengajuan surat diterima ataupun selesai magang))
+
+untuk login ke akun admin berbeda pintu dengan masuk keweb dashboard umum saat menjadi tamu
