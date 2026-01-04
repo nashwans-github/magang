@@ -29,6 +29,14 @@ class ProgressResource extends Resource
         return auth()->user()->role === 'peserta';
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        if (auth()->user()->role === 'peserta') {
+            return $record->status === 'pending' || $record->status === 'revision';
+        }
+        return true;
+    }
+
     public static function canViewAny(): bool
     {
         // Allow all Admins

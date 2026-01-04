@@ -35,6 +35,11 @@ class SuratResource extends Resource
         // Peserta requests (creates), Admin OPD also creates/validates
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role !== 'peserta';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
