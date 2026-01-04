@@ -71,7 +71,60 @@ class OpdResource extends Resource
                         ->maxLength(255)
                         ->unique(Opd::class, 'slug', ignoreRecord: true),
                     
-
+                    Forms\Components\Select::make('admin_user_id')
+                        ->label('Akun Admin OPD')
+                        ->options(function ($record) {
+                            return \App\Models\User::where('role', 'admin_opd')
+                                ->where(function ($query) use ($record) {
+                                    $query->whereNull('opd_id');
+                                    if ($record) {
+                                        $query->orWhere('opd_id', $record->id);
+                                    }
+                                })
+                                ->pluck('name', 'id');
+                        })
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn () => auth()->user()->role === 'admin_pusat')
+                        ->afterStateHydrated(function (Forms\Components\Select $component, $record) {
+                            if ($record) {
+                                $admin = \App\Models\User::where('opd_id', $record->id)->where('role', 'admin_opd')->first();
+                                if ($admin) {
+                                    $component->state($admin->id);
+                                }
+                            }
+                        })
+                        ->saveRelationshipsUsing(function ($state, $record) {
+                            if ($state) {
+                                $user = \App\Models\User::find($state);
+                                if ($user) {
+                                    $user->update(['opd_id' => $record->id]);
+                                }
+                            }
+                        })
+                        ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->label('Nama Lengkap')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('email')
+                                ->label('Email')
+                                ->email()
+                                ->required()
+                                ->unique('users', 'email')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('password')
+                                ->label('Kata Sandi')
+                                ->password()
+                                ->required()
+                                ->maxLength(255)
+                                ->dehydrateStateUsing(fn ($state) => \Illuminate\Support\Facades\Hash::make($state)),
+                            Forms\Components\Hidden::make('role')
+                                ->default('admin_opd'),
+                        ])
+                        ->createOptionUsing(function (array $data) {
+                            return \App\Models\User::create($data)->id;
+                        }),
 
                     Forms\Components\Textarea::make('address')
                         ->label('Alamat')
@@ -153,7 +206,7 @@ class OpdResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AdminsRelationManager::class,
+            //
         ];
     }
 
