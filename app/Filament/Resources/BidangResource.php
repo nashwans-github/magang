@@ -48,7 +48,15 @@ class BidangResource extends Resource
                     Forms\Components\Select::make('opd_id')
                         ->relationship('opd', 'name')
                         ->label('OPD')
-                        ->required(),
+                        ->required()
+                        ->default(function () {
+                            if (auth()->user()->role === 'admin_opd') {
+                                return auth()->user()->opd_id;
+                            }
+                            return null;
+                        })
+                        ->disabled(fn () => auth()->user()->role === 'admin_opd')
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('name')
                         ->label('Nama Bidang')
                         ->required()

@@ -71,7 +71,15 @@ class BeritaResource extends Resource
                         ->label('OPD')
                         ->searchable()
                         ->preload()
-                        ->required(),
+                        ->required()
+                        ->default(function () {
+                            if (auth()->user()->role === 'admin_opd') {
+                                return auth()->user()->opd_id;
+                            }
+                            return null;
+                        })
+                        ->disabled(fn () => auth()->user()->role === 'admin_opd')
+                        ->dehydrated(),
                     Forms\Components\TextInput::make('title')
                         ->label('Judul Berita')
                         ->required()

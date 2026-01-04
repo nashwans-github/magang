@@ -25,6 +25,19 @@ class PesertaResource extends Resource
     protected static ?string $navigationGroup = 'Kegiatan Magang';
     protected static ?int $navigationSort = 1;
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role === 'admin_opd') {
+            $query->whereHas('bidang', function ($q) {
+                $q->where('opd_id', auth()->user()->opd_id);
+            });
+        }
+
+        return $query;
+    }
+
     public static function canViewAny(): bool
     {
         return in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'admin_pembimbing']);
