@@ -82,6 +82,9 @@ class ProgressResource extends Resource
                     Forms\Components\FileUpload::make('file_path')
                         ->label('Lampiran File')
                         ->directory('progress-files')
+                        ->openable()
+                        ->downloadable()
+                        ->previewable(true)
                         ->columnSpanFull(),
 
                     // Status: Hidden for Peserta, Editable for Admin
