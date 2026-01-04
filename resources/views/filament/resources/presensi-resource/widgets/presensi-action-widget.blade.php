@@ -30,8 +30,20 @@
                         {{-- Trigger Modal Action --}}
                         {{ $this->checkInAction }}
                     
+                    @elseif($existingPresensi->status !== 'hadir')
+                        {{-- Status Izin / Sakit --}}
+                        <div class="flex items-center gap-2 text-info-600 dark:text-info-400 bg-info-50 dark:bg-info-900/10 px-4 py-2 rounded-lg border border-info-200 dark:border-info-800">
+                             <x-heroicon-o-information-circle class="w-6 h-6" />
+                             <span class="font-medium">Status Hari Ini: {{ ucfirst($existingPresensi->status) }}</span>
+                        </div>
+                        @if($existingPresensi->notes)
+                        <div class="text-xs text-gray-400 mt-1 text-right">
+                            Ket: {{ Str::limit($existingPresensi->notes, 30) }}
+                        </div>
+                        @endif
+
                     @elseif(!$existingPresensi->check_out)
-                        {{-- Sudah Masuk, Belum Keluar --}}
+                        {{-- Sudah Masuk (Hadir), Belum Keluar --}}
                         <div class="text-right">
                              <p class="text-sm text-success-600 font-bold mb-1">Anda sudah absen masuk hari ini.</p>
                              <div class="flex flex-col items-end text-xs text-gray-500">
