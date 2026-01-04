@@ -133,11 +133,9 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Dokumen</p>
-                                    @if($instansi->document_requirements && is_array($instansi->document_requirements))
+                                    @if($instansi->document_requirements)
                                         <ul class="text-sm font-medium mt-1 list-disc list-inside marker:text-blue-500">
-                                            @foreach($instansi->document_requirements as $req)
-                                                <li>{{ $req }}</li>
-                                            @endforeach
+                                            {{ $instansi->document_requirements }}
                                         </ul>
                                     @else
                                         <p class="text-sm font-medium mt-1">-</p>
