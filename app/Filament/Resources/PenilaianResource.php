@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PenilaianResource extends Resource
@@ -48,6 +49,11 @@ class PenilaianResource extends Resource
     }
     
     public static function canCreate(): bool
+    {
+        return auth()->user()->role !== 'peserta';
+    }
+
+    public static function canEdit(Model $record): bool
     {
         return auth()->user()->role !== 'peserta';
     }
@@ -145,6 +151,7 @@ class PenilaianResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(), // Added for everyone (including Peserta) to view details
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'admin_pembimbing'])),
             ])

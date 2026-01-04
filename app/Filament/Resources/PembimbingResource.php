@@ -45,6 +45,11 @@ class PembimbingResource extends Resource
         return auth()->user()->role !== 'admin_pusat';
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->role !== 'admin_pusat';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -109,6 +114,7 @@ class PembimbingResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn () => auth()->user()->role !== 'admin_pusat'),
             ])

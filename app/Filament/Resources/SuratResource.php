@@ -138,10 +138,11 @@ class SuratResource extends Resource
                     ->placeholder('Menunggu Validasi'),
                 Tables\Columns\TextColumn::make('file_path')
                     ->label('File')
-                    ->formatStateUsing(fn () => 'Download')
-                    ->url(fn ($record) => ($record && $record->file_path) ? \Illuminate\Support\Facades\Storage::url($record->file_path) : '#')
-                    ->openUrlInNewTab()
-                    ->visible(fn ($record) => $record && $record->file_path !== null),
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state ? 'Download' : 'Belum Ada')
+                    ->color(fn ($state) => $state ? 'success' : 'gray')
+                    ->url(fn ($record) => ($record && $record->file_path) ? \Illuminate\Support\Facades\Storage::url($record->file_path) : null)
+                    ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat Pada')
                     ->dateTime()

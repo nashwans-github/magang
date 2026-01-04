@@ -30,12 +30,16 @@ class MagangApplicationResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        return auth()->user()->role !== 'admin_pusat';
+        if (auth()->user()->role === 'admin_pusat') {
+            return false;
+        }
+        // Only allow edit if pending (for everyone allowed to edit)
+        return $record->status === 'pending';
     }
 
     public static function canDelete(Model $record): bool
     {
-        return auth()->user()->role !== 'admin_pusat';
+        return auth()->user()->role !== 'admin_pusat' && $record->status === 'pending';
     }
 
     public static function getEloquentQuery(): Builder
@@ -243,16 +247,7 @@ class MagangApplicationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
-                    ->visible(function ($record) {
-                        // Admin Pusat cannot edit (read-only)
-                        if (auth()->user()->role === 'admin_pusat') {
-                            return false;
-                        }
-                        
-                        // Edit only allowed if status is pending (for everyone: User, Admin OPD)
-                        return $record->status === 'pending';
-                    }),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                     ->label(fn () => in_array(auth()->user()->role, ['pemohon', 'peserta']) ? 'Batalkan Pengajuan' : 'Hapus')
                     ->visible(function ($record) {
