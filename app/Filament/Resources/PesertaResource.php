@@ -123,6 +123,11 @@ class PesertaResource extends Resource
                     ->label('Bidang')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('bidang.opd.name')
+                    ->label('OPD')
+                    ->searchable()
+                    ->sortable()
+                    ->visible(fn () => auth()->user()->role === 'admin_pusat'),
                 Tables\Columns\TextColumn::make('major')
                     ->label('Jurusan')
                     ->searchable(),
