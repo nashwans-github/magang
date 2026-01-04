@@ -29,6 +29,15 @@ class PesertaStatsWidget extends BaseWidget
 
         // Status Permohonan Terakhir
         $latestApplication = MagangApplication::where('user_id', $user->id)->latest()->first();
+        
+        if (! $latestApplication) {
+            // Check if user is a member (Peserta) of an application
+            $peserta = \App\Models\Peserta::where('user_id', $user->id)->latest()->first();
+            if ($peserta) {
+                $latestApplication = $peserta->magangApplication;
+            }
+        }
+
         if ($latestApplication) {
             $color = match($latestApplication->status) {
                 'approved' => 'success',

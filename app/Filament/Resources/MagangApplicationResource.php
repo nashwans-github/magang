@@ -25,7 +25,12 @@ class MagangApplicationResource extends Resource
 
     public static function canCreate(): bool
     {
-        return ! in_array(auth()->user()->role, ['admin_opd', 'admin_pembimbing', 'admin_pusat']); 
+        if (in_array(auth()->user()->role, ['pemohon', 'peserta'])) {
+            // Cannot create if already has own application OR is a member of one (Peserta)
+            return ! MagangApplication::where('user_id', auth()->id())->exists() 
+                && ! \App\Models\Peserta::where('user_id', auth()->id())->exists();
+        }
+        return ! in_array(auth()->user()->role, ['admin_opd', 'admin_pembimbing', 'admin_pusat']);  
     }
 
     public static function canEdit(Model $record): bool
@@ -47,7 +52,12 @@ class MagangApplicationResource extends Resource
         $query = parent::getEloquentQuery();
 
         if (in_array(auth()->user()->role, ['pemohon', 'peserta'])) {
-            $query->where('user_id', auth()->id());
+            $query->where(function ($q) {
+                $q->where('user_id', auth()->id())
+                  ->orWhereHas('pesertas', function ($sq) {
+                      $sq->where('user_id', auth()->id());
+                  });
+            });
         } elseif (auth()->user()->role === 'admin_opd') {
             $query->where('opd_id', auth()->user()->opd_id);
         }
