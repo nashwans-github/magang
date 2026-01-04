@@ -73,9 +73,10 @@ class PenilaianResource extends Resource
                         ->validationMessages([
                             'unique' => 'Peserta ini sudah dinilai. Hanya satu penilaian per peserta.',
                         ]),
+
                     Forms\Components\Select::make('pembimbing_id')
                         ->label('Pembimbing')
-                        ->relationship('pembimbing.user', 'name')
+                        ->options(\App\Models\Pembimbing::with('user')->get()->pluck('user.name', 'id'))
                         ->required()
                         ->searchable()
                         ->preload()
