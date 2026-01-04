@@ -33,6 +33,15 @@ class PesertaResource extends Resource
             $query->whereHas('bidang', function ($q) {
                 $q->where('opd_id', auth()->user()->opd_id);
             });
+        } elseif (auth()->user()->role === 'admin_pembimbing') {
+            $pembimbing = \App\Models\Pembimbing::where('user_id', auth()->id())->first();
+            if ($pembimbing) {
+                $query->where('bidang_id', $pembimbing->bidang_id);
+            } else {
+                // If pembimbing record not found (shouldn't happen ideally), show nothing or all?
+                // 安全策 (Safety): show nothing
+                $query->whereRaw('1 = 0');
+            }
         }
 
         return $query;
