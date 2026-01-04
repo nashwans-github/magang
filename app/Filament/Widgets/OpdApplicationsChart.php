@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class OpdApplicationsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Jumlah Pemohon per Dinas';
+    protected static ?string $heading = 'Jumlah Pendaftar per Dinas';
 
     protected static ?int $sort = 2;
 

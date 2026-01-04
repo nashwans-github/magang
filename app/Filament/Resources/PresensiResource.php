@@ -61,7 +61,7 @@ class PresensiResource extends Resource
     public static function canViewAny(): bool
     {
         // Allow all Admins
-        if (in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'admin_pembimbing'])) {
+        if (in_array(auth()->user()->role, ['admin_pembimbing'])) {
             return true;
         }
 

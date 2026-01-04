@@ -24,6 +24,16 @@ class PembimbingResource extends Resource
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 3;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->role !== 'admin_opd';
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->role !== 'admin_pusat';
+    }
+
     public static function canViewAny(): bool
     {
         return in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']);
@@ -93,11 +103,13 @@ class PembimbingResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => auth()->user()->role !== 'admin_pusat'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()->role !== 'admin_pusat'),
                 ]),
             ]);
     }
