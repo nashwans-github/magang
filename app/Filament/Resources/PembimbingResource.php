@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PembimbingResource extends Resource
@@ -39,7 +40,7 @@ class PembimbingResource extends Resource
         return in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']);
     }
 
-    public static function canDelete(Pembimbing $record): bool
+    public static function canDelete(Model $record): bool
     {
         return auth()->user()->role !== 'admin_pusat';
     }

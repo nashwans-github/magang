@@ -58,57 +58,59 @@ class PenilaianResource extends Resource
             ->schema([
                 Forms\Components\Card::make()->schema([
                     Forms\Components\Select::make('peserta_id')
-                        ->relationship('peserta.user', 'name')
                         ->label('Nama Peserta')
+                        ->options(\App\Models\Peserta::with('user')->get()->pluck('user.name', 'id'))
                         ->searchable()
                         ->preload()
-                        ->required(),
-                    // Logic for Pembimbing ID and Name
+                        ->required()
+                        ->unique(ignoreRecord: true)
+                        ->validationMessages([
+                            'unique' => 'Peserta ini sudah dinilai. Hanya satu penilaian per peserta.',
+                        ]),
                     Forms\Components\Select::make('pembimbing_id')
                         ->label('Pembimbing')
                         ->relationship('pembimbing.user', 'name')
                         ->required()
                         ->searchable()
                         ->preload()
-                        ->visible(fn () => auth()->user()->role !== 'admin_pembimbing')
-                        ->default(null),
-                        
-                    Forms\Components\Hidden::make('pembimbing_id')
                         ->default(function () {
-                            return \App\Models\Pembimbing::where('user_id', auth()->id())->value('id');
+                            if (auth()->user()->role === 'admin_pembimbing') {
+                                return \App\Models\Pembimbing::where('user_id', auth()->id())->value('id');
+                            }
+                            return null;
                         })
-                        ->visible(fn () => auth()->user()->role === 'admin_pembimbing'),
-                    
-                    Forms\Components\TextInput::make('pembimbing_name')
-                        ->label('Nama Pembimbing')
-                        ->default(fn () => auth()->user()->name)
-                        ->disabled()
-                        ->dehydrated(false)
-                        ->visible(fn () => auth()->user()->role === 'admin_pembimbing'),
+                        ->disabled(fn () => auth()->user()->role === 'admin_pembimbing')
+                        ->dehydrated(),
                     Forms\Components\Section::make('Penilaian')->schema([
                         Forms\Components\TextInput::make('attendance_score')
                             ->label('Nilai Kehadiran')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                         Forms\Components\TextInput::make('discipline_score')
                             ->label('Nilai Kedisipilan')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                         Forms\Components\TextInput::make('task_completion_score')
                             ->label('Nilai Penyelesaian Tugas')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                         Forms\Components\TextInput::make('deadline_accuracy_score')
                             ->label('Nilai Ketepatan Waktu')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                         Forms\Components\TextInput::make('independence_score')
                             ->label('Nilai Kemandirian')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                         Forms\Components\TextInput::make('final_score')
                             ->label('Nilai Akhir')
                             ->numeric()
+                            ->maxValue(100)
                             ->default(0),
                     ])->columns(2),
                     Forms\Components\Textarea::make('comments')
