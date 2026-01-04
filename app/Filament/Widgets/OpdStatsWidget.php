@@ -19,20 +19,8 @@ class OpdStatsWidget extends BaseWidget
         $user = auth()->user();
 
         if ($user->role === 'admin_pusat') {
-            // Admin Pusat sees a card for each OPD with applicant count
-            $stats = [];
-            $opds = \App\Models\Opd::withCount('magangApplications')->get();
 
-            foreach ($opds as $opd) {
-                $stats[] = Stat::make($opd->name, $opd->magang_applications_count)
-                    ->description('Jumlah Pemohon')
-                    ->descriptionIcon('heroicon-m-user-group')
-                    ->color('primary');
-            }
-
-            // Also show total Applicants overall as key summary?
-            // User requested "tiap opd jadi buatkan cardnya", so the loop is key.
-            return $stats;
+            return [];
         }
 
         // Existing logic for Admin OPD
