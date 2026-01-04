@@ -17,7 +17,7 @@ class MagangApplicationObserver
     public function updated(MagangApplication $magangApplication): void
     {
         if ($magangApplication->isDirty('status') && $magangApplication->status === 'approved') {
-            
+
             DB::beginTransaction();
             try {
                 // 1. Process Main Applicant (Ketua/Individu)
@@ -26,11 +26,12 @@ class MagangApplicationObserver
                     $mainUser->update(['role' => 'peserta']);
                 }
 
+
                 $this->createPesertaIfNotExists(
                     $magangApplication->user_id,
                     $magangApplication->id,
                     $magangApplication->bidang_id,
-                    $magangApplication->institution_name // Use institution as major placeholder if needed, or '-'
+                    $magangApplication->jurusan // Use institution as major placeholder if needed, or '-'
                 );
 
                 // 2. Process Members
@@ -47,17 +48,17 @@ class MagangApplicationObserver
 
                     // Ensure role is peserta
                     if ($user->role !== 'peserta' && $user->role !== 'admin_pusat') { // Don't downgrade admins
-                         $user->update(['role' => 'peserta']);
+                        $user->update(['role' => 'peserta']);
                     }
 
                     $this->createPesertaIfNotExists(
                         $user->id,
                         $magangApplication->id,
                         $member->bidang_id ?? $magangApplication->bidang_id,
-                        '-'
+                        $member->jurusan
                     );
                 }
-                
+
                 DB::commit();
 
                 Notification::make()
@@ -65,7 +66,6 @@ class MagangApplicationObserver
                     ->body('Akun peserta untuk ketua dan anggota telah digenerate.')
                     ->success()
                     ->send();
-
             } catch (\Exception $e) {
                 DB::rollBack();
                 Notification::make()
@@ -77,7 +77,7 @@ class MagangApplicationObserver
         }
     }
 
-    protected function createPesertaIfNotExists($userId, $applicationId, $bidangId, $major = '-')
+    protected function createPesertaIfNotExists($userId, $applicationId, $bidangId, $major)
     {
         $exists = Peserta::where('magang_application_id', $applicationId)
             ->where('user_id', $userId)
@@ -85,6 +85,15 @@ class MagangApplicationObserver
 
         if (! $exists) {
             Peserta::create([
+                'user_id' => $userId,
+                'magang_application_id' => $applicationId,
+                'bidang_id' => $bidangId,
+                'major' => $major ?? '-',
+                'student_id_number' => '-',
+                'status' => 'active',
+            ]);
+        } else {
+            Peserta::where('user_id', $userId)->update([
                 'user_id' => $userId,
                 'magang_application_id' => $applicationId,
                 'bidang_id' => $bidangId,

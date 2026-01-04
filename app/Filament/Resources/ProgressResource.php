@@ -46,8 +46,8 @@ class ProgressResource extends Resource
                 Forms\Components\Card::make()->schema([
                     // Logic untuk Peserta: Hidden & Auto-filled
                     Forms\Components\Hidden::make('peserta_id')
-                        ->default(fn () => \App\Models\Peserta::where('user_id', auth()->id())->value('id'))
-                        ->visible(fn () => auth()->user()->role === 'peserta'),
+                        ->default(fn() => \App\Models\Peserta::where('user_id', auth()->id())->value('id'))
+                        ->visible(fn() => auth()->user()->role === 'peserta'),
 
                     // Logic untuk Admin: Selectable
                     Forms\Components\Select::make('peserta_id')
@@ -56,7 +56,7 @@ class ProgressResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->visible(fn () => auth()->user()->role !== 'peserta'),
+                        ->visible(fn() => auth()->user()->role !== 'peserta'),
 
                     Forms\Components\DatePicker::make('date')
                         ->label('Tanggal')
@@ -74,7 +74,7 @@ class ProgressResource extends Resource
                         ->label('Lampiran File')
                         ->directory('progress-files')
                         ->columnSpanFull(),
-                    
+
                     // Status: Hidden for Peserta, Editable for Admin
                     Forms\Components\Select::make('status')
                         ->label('Status')
@@ -85,14 +85,14 @@ class ProgressResource extends Resource
                         ])
                         ->default('pending')
                         ->required()
-                        ->visible(fn () => auth()->user()->role !== 'peserta'),
+                        ->visible(fn() => auth()->user()->role !== 'peserta'),
 
                     // Feedback: Hidden for Peserta unless there is feedback
                     Forms\Components\Textarea::make('feedback')
                         ->label('Catatan Pembimbing')
                         ->columnSpanFull()
-                        ->disabled(fn () => auth()->user()->role === 'peserta') // Enabled for admins/pembimbing
-                        ->visible(fn ($record) => auth()->user()->role !== 'peserta' || filled($record?->feedback)),
+                        ->disabled(fn() => auth()->user()->role === 'peserta') // Enabled for admins/pembimbing
+                        ->visible(fn($record) => auth()->user()->role !== 'peserta' || filled($record?->feedback)),
                 ])->columns(2),
             ]);
     }
@@ -105,7 +105,7 @@ class ProgressResource extends Resource
                     ->label('Peserta')
                     ->searchable()
                     ->sortable()
-                    ->visible(fn () => auth()->user()->role !== 'peserta'),
+                    ->visible(fn() => auth()->user()->role !== 'peserta'),
                 Tables\Columns\TextColumn::make('date')
                     ->label('Tanggal')
                     ->date('d M Y')
@@ -114,28 +114,28 @@ class ProgressResource extends Resource
                     ->label('Judul Kegiatan')
                     ->limit(50)
                     ->searchable()
-                    ->description(fn ($record) => $record ? \Illuminate\Support\Str::limit(strip_tags($record->description), 50) : null),
+                    ->description(fn($record) => $record ? \Illuminate\Support\Str::limit(strip_tags($record->description), 50) : null),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'pending' => 'warning',
                         'approved' => 'success',
                         'revision' => 'danger',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
                         'pending' => 'Menunggu',
                         'approved' => 'Disetujui',
                         'revision' => 'Revisi',
                     }),
                 Tables\Columns\TextColumn::make('file_path')
                     ->label('Lampiran')
-                    ->formatStateUsing(fn () => 'Lihat File')
-                    ->url(fn ($record) => $record?->file_path ? \Illuminate\Support\Facades\Storage::url($record->file_path) : null)
+                    ->formatStateUsing(fn() => 'Lihat File')
+                    ->url(fn($record) => $record?->file_path ? \Illuminate\Support\Facades\Storage::url($record->file_path) : null)
                     ->icon('heroicon-o-paper-clip')
                     ->openUrlInNewTab()
                     ->color('primary')
-                    ->visible(fn ($record) => filled($record?->file_path)),
+                    ->visible(fn($record) => filled($record?->file_path)),
             ])
             ->filters([
                 //
@@ -143,12 +143,12 @@ class ProgressResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => auth()->user()->role === 'peserta' && $record->status === 'pending'), 
+                    ->visible(fn($record) => auth()->user()->role === 'peserta' && $record->status === 'pending'),
                 // Edit only for Peserta when pending? Or Pembimbing too? 
                 // Let's keep Edit loose or restrict? User didn't specify. 
                 // But typically if approved, no edit.
                 // Let's stick to adding the new actions first, and maybe hide generic Edit for Pembimbing.
-                
+
                 Tables\Actions\Action::make('approve')
                     ->label('Setujui')
                     ->icon('heroicon-o-check')
@@ -165,7 +165,7 @@ class ProgressResource extends Resource
                             'feedback' => $data['feedback'],
                         ]);
                     })
-                    ->visible(fn ($record) => auth()->user()->role !== 'peserta' && $record->status === 'pending'),
+                    ->visible(fn($record) => auth()->user()->role !== 'peserta' && $record->status === 'pending'),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Tolak')
@@ -184,10 +184,10 @@ class ProgressResource extends Resource
                             'feedback' => $data['feedback'],
                         ]);
                     })
-                    ->visible(fn ($record) => auth()->user()->role !== 'peserta' && $record->status === 'pending'),
+                    ->visible(fn($record) => auth()->user()->role !== 'peserta' && $record->status === 'pending'),
 
                 Tables\Actions\DeleteAction::make()
-                     ->visible(fn ($record) => auth()->user()->role === 'peserta' && $record->status === 'pending'), // Restrict delete too?
+                    ->visible(fn($record) => auth()->user()->role === 'peserta' && $record->status === 'pending'), // Restrict delete too?
             ])
             ->bulkActions([
                 // Bulk actions removed as requested
@@ -219,8 +219,8 @@ class ProgressResource extends Resource
     {
         return [
             'index' => Pages\ListProgress::route('/'),
-            'create' => Pages\CreateProgress::route('/create'),
-            'edit' => Pages\EditProgress::route('/{record}/edit'),
+            // 'create' => Pages\CreateProgress::route('/create'),
+            // 'edit' => Pages\EditProgress::route('/{record}/edit'),
         ];
     }
 }
