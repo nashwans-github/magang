@@ -56,15 +56,9 @@
             <!-- Left Column: Images -->
             <div class="lg:col-span-5 flex flex-col gap-6">
                 @if($instansi->documentation_images && is_array($instansi->documentation_images) && count($instansi->documentation_images) > 0)
-<<<<<<< HEAD
-                    @foreach($instansi->documentation_images as $img)
-                        <img src="{{ asset('storage/' . $img) }}" alt="Dokumentasi" class="w-full h-64 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition duration-500">
-                    @endforeach
-=======
                 @foreach($instansi->documentation_images as $img)
                 <img src="{{ asset('storage/' . $img) }}" alt="Dokumentasi" class="w-full h-64 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition duration-500">
                 @endforeach
->>>>>>> c17550de0458c9fee91b031d5df21b4aa9b49636
                 @else
                 <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 rounded-3xl flex items-center justify-center text-gray-400">
                     No Images Available
@@ -80,7 +74,7 @@
                     <div>
                         <h1 class="text-3xl sm:text-4xl font-extrabold mb-6 leading-tight">{{ $instansi->name }}</h1>
                         <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                            {{ $instansi->description }}
+                            {{ strip_tags($instansi->description) }}
                         </p>
                     </div>
 
@@ -144,7 +138,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Pendidikan</p>
-                                    <p class="text-sm font-medium mt-1">{{ $instansi->required_education ?? '-' }}</p>
+                                    <p class="text-sm font-medium mt-1">{{ strip_tags($instansi->required_education ?? '-') }}</p>
                                 </div>
                             </div>
 
@@ -159,7 +153,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">Dokumen</p>
                                     @if($instansi->document_requirements)
                                     <ul class="text-sm font-medium mt-1 list-disc list-inside marker:text-blue-500">
-                                        {{ $instansi->document_requirements }}
+                                        {{ strip_tags($instansi->document_requirements) }}
                                     </ul>
                                     @else
                                     <p class="text-sm font-medium mt-1">-</p>

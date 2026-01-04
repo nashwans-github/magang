@@ -182,7 +182,7 @@
                         <!-- Content -->
                         <div class="p-6 flex flex-col flex-grow">
                             <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6 line-clamp-3">
-                                {{ $opd->description ?? 'Instansi Pemerintah Kota Surabaya yang siap menerima talenta muda.' }}
+                                {{ strip_tags($opd->description ?? 'Instansi Pemerintah Kota Surabaya yang siap menerima talenta muda.') }}
                             </p>
 
                             <!-- Button Area -->
