@@ -32,10 +32,22 @@ class BeritaResource extends Resource
         if (auth()->user()->role === 'admin_opd') {
             $query->where('opd_id', auth()->user()->opd_id);
         } elseif (auth()->user()->role === 'peserta') {
-            $query->whereHas('opd.magangApplications', function ($q) {
+            $query->whereHas('opd.bidangs.pesertas', function ($q) {
                 $q->where('user_id', auth()->id())
-                  ->where('status', 'approved'); // Only show if accepted
+                  ->where('status', 'active'); // Assuming active link
             });
+            // Also potential direct link via application?
+            // Actually, simpler: Get Opd IDs from user's Peserta records
+            $opdIds = \App\Models\Peserta::where('user_id', auth()->id())
+                ->with(['bidang', 'magangApplication'])
+                ->get()
+                ->map(function ($peserta) {
+                    return $peserta->bidang?->opd_id ?? $peserta->magangApplication?->opd_id;
+                })
+                ->filter()
+                ->unique();
+            
+            $query->whereIn('opd_id', $opdIds);
         }
 
         return $query;
