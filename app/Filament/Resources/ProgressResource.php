@@ -212,6 +212,19 @@ class ProgressResource extends Resource
             if ($peserta) {
                 $query->where('peserta_id', $peserta->id);
             }
+        } elseif (auth()->user()->role === 'admin_opd') {
+            $query->whereHas('peserta.bidang', function ($q) {
+                $q->where('opd_id', auth()->user()->opd_id);
+            });
+        } elseif (auth()->user()->role === 'admin_pembimbing') {
+            $pembimbing = \App\Models\Pembimbing::where('user_id', auth()->id())->first();
+            if ($pembimbing) {
+                $query->whereHas('peserta', function ($q) use ($pembimbing) {
+                    $q->where('bidang_id', $pembimbing->bidang_id);
+                });
+            } else {
+                 $query->whereRaw('1 = 0');
+            }
         }
 
         return $query;
