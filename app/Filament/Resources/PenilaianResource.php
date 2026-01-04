@@ -33,6 +33,19 @@ class PenilaianResource extends Resource
             $query->whereHas('peserta', function ($q) {
                 $q->where('user_id', auth()->id());
             });
+        } elseif (auth()->user()->role === 'admin_opd') {
+            $query->whereHas('peserta.bidang', function ($q) {
+                $q->where('opd_id', auth()->user()->opd_id);
+            });
+        } elseif (auth()->user()->role === 'admin_pembimbing') {
+            $pembimbing = \App\Models\Pembimbing::where('user_id', auth()->id())->first();
+            if ($pembimbing) {
+                 $query->whereHas('peserta', function ($q) use ($pembimbing) {
+                    $q->where('bidang_id', $pembimbing->bidang_id);
+                });
+            } else {
+                 $query->whereRaw('1 = 0');
+            }
         }
 
         return $query;
@@ -41,7 +54,7 @@ class PenilaianResource extends Resource
     public static function canViewAny(): bool
     {
         // Allow all Admins
-        if (in_array(auth()->user()->role, ['admin_pembimbing'])) {
+        if (in_array(auth()->user()->role, ['admin_pembimbing', 'admin_opd', 'admin_pusat'])) {
             return true;
         }
         
@@ -65,7 +78,24 @@ class PenilaianResource extends Resource
                 Forms\Components\Card::make()->schema([
                     Forms\Components\Select::make('peserta_id')
                         ->label('Nama Peserta')
-                        ->options(\App\Models\Peserta::with('user')->get()->pluck('user.name', 'id'))
+                        ->options(function () {
+                            if (auth()->user()->role === 'admin_pembimbing') {
+                                $pembimbing = \App\Models\Pembimbing::where('user_id', auth()->id())->first();
+                                if ($pembimbing) {
+                                    return \App\Models\Peserta::where('bidang_id', $pembimbing->bidang_id)
+                                        ->with('user')
+                                        ->get()
+                                        ->pluck('user.name', 'id');
+                                }
+                                return [];
+                            } elseif (auth()->user()->role === 'admin_opd') {
+                                return \App\Models\Peserta::whereHas('bidang', function ($q) {
+                                    $q->where('opd_id', auth()->user()->opd_id);
+                                })->with('user')->get()->pluck('user.name', 'id');
+                            }
+                            // Fallback for Admin Pusat or others
+                            return \App\Models\Peserta::with('user')->get()->pluck('user.name', 'id');
+                        })
                         ->searchable()
                         ->preload()
                         ->required()
