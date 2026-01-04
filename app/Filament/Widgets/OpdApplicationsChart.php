@@ -30,12 +30,6 @@ class OpdApplicationsChart extends ChartWidget
                     'backgroundColor' => '#3b82f6', // blue-500
                     'borderColor' => '#2563eb', // blue-600
                 ],
-                [
-                    'label' => 'Jumlah Pendaftar (Peserta Aktif)',
-                    'data' => $data->pluck('pesertas_count'),
-                    'backgroundColor' => '#10b981', // emerald-500
-                    'borderColor' => '#059669', // emerald-600
-                ],
             ],
             'labels' => $data->pluck('name'),
         ];

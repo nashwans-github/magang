@@ -15,6 +15,8 @@ class AdminOpdResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected static ?string $navigationLabel = 'Admin OPD';
     protected static ?string $modelLabel = 'Admin OPD';

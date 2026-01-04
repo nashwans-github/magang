@@ -22,13 +22,13 @@ class StatsOverviewWidget extends BaseWidget
                 ->description('Admin Pusat')
                 ->color('primary'),
 
-            Stat::make('Total Permohonan', MagangApplication::count())
+            Stat::make('Total Pemohon', MagangApplication::count())
                 ->description('Semua permohonan masuk')
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('primary')
                 ->chart([7, 2, 10, 3, 15, 4, 17]),
 
-            Stat::make('Peserta Aktif', Peserta::where('status', 'active')->count())
+            Stat::make('Total Pendaftar (Aktif)', Peserta::where('status', 'active')->count())
                 ->description('Sedang magang saat ini')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('success')

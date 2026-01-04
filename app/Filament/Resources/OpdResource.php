@@ -71,38 +71,7 @@ class OpdResource extends Resource
                         ->maxLength(255)
                         ->unique(Opd::class, 'slug', ignoreRecord: true),
                     
-                    // Virtual field to link Admin User
-                    Forms\Components\Select::make('admin_user_id')
-                        ->label('Akun Admin OPD')
-                        ->options(function () {
-                            return \App\Models\User::where('role', 'admin_opd')
-                                ->whereNull('opd_id') // Only show users not yet linked, or allow re-linking?
-                                ->pluck('name', 'id');
-                        })
-                        ->searchable()
-                        ->preload()
-                        ->visible(fn () => auth()->user()->role === 'admin_pusat')
-                        ->afterStateHydrated(function (Forms\Components\Select $component, $record) {
-                            // If editing, show the current admin(s)
-                            if ($record) {
-                                $admin = \App\Models\User::where('opd_id', $record->id)->where('role', 'admin_opd')->first();
-                                if ($admin) {
-                                    $component->state($admin->id);
-                                }
-                            }
-                        })
-                        ->saveRelationshipsUsing(function ($state, $record) {
-                            // Update the selected user's opd_id
-                            if ($state) {
-                                // First, maybe clear previous admin? Or support multiple? 
-                                // Assuming 1 main admin for this flow.
-                                // Don't clear others necessarily, just set this one.
-                                $user = \App\Models\User::find($state);
-                                if ($user) {
-                                    $user->update(['opd_id' => $record->id]);
-                                }
-                            }
-                        }),
+
 
                     Forms\Components\Textarea::make('address')
                         ->label('Alamat')
@@ -184,7 +153,7 @@ class OpdResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\AdminsRelationManager::class,
         ];
     }
 
