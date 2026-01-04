@@ -20,15 +20,21 @@ class OpdApplicationsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Opd::withCount('magangApplications')->get();
+        $data = Opd::withCount(['magangApplications', 'pesertas'])->get();
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Jumlah Pemohon',
+                    'label' => 'Jumlah Pemohon (Pelamar)',
                     'data' => $data->pluck('magang_applications_count'),
-                    'backgroundColor' => '#36A2EB',
-                    'borderColor' => '#9BD0F5',
+                    'backgroundColor' => '#3b82f6', // blue-500
+                    'borderColor' => '#2563eb', // blue-600
+                ],
+                [
+                    'label' => 'Jumlah Pendaftar (Peserta Aktif)',
+                    'data' => $data->pluck('pesertas_count'),
+                    'backgroundColor' => '#10b981', // emerald-500
+                    'borderColor' => '#059669', // emerald-600
                 ],
             ],
             'labels' => $data->pluck('name'),

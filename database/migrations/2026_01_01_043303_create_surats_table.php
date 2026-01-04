@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('peserta_id')->constrained('pesertas')->cascadeOnDelete();
             $table->enum('type', ['acceptance', 'completion']);
-            $table->string('file_path');
-            $table->date('issued_date');
+            $table->string('file_path')->nullable();
+            $table->date('issued_date')->nullable();
             $table->timestamps();
         });
     }

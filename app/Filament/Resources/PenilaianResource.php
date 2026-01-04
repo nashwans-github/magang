@@ -63,19 +63,28 @@ class PenilaianResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required(),
-                    // Hidden field to store the actual Pembimbing ID
+                    // Logic for Pembimbing ID and Name
+                    Forms\Components\Select::make('pembimbing_id')
+                        ->label('Pembimbing')
+                        ->relationship('pembimbing.user', 'name')
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn () => auth()->user()->role !== 'admin_pembimbing')
+                        ->default(null),
+                        
                     Forms\Components\Hidden::make('pembimbing_id')
                         ->default(function () {
                             return \App\Models\Pembimbing::where('user_id', auth()->id())->value('id');
                         })
-                        ->required(),
+                        ->visible(fn () => auth()->user()->role === 'admin_pembimbing'),
                     
-                    // Display-only field for the User Name
                     Forms\Components\TextInput::make('pembimbing_name')
                         ->label('Nama Pembimbing')
                         ->default(fn () => auth()->user()->name)
                         ->disabled()
-                        ->dehydrated(false), // Do not save this field, it's just for display
+                        ->dehydrated(false)
+                        ->visible(fn () => auth()->user()->role === 'admin_pembimbing'),
                     Forms\Components\Section::make('Penilaian')->schema([
                         Forms\Components\TextInput::make('attendance_score')
                             ->label('Nilai Kehadiran')

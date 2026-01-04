@@ -39,6 +39,11 @@ class PembimbingResource extends Resource
         return in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']);
     }
 
+    public static function canDelete(Pembimbing $record): bool
+    {
+        return auth()->user()->role !== 'admin_pusat';
+    }
+
     public static function form(Form $form): Form
     {
         return $form

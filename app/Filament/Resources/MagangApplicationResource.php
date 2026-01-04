@@ -130,7 +130,7 @@ class MagangApplicationResource extends Resource
                         ->columnSpanFull(),
                     
                     Forms\Components\Section::make('Anggota Kelompok (Opsional)')
-                        ->description('Isi jika pengajuan ini untuk kelompok. Kosongkan jika individu.')
+                        ->description(new \Illuminate\Support\HtmlString('Isi jika pengajuan ini untuk kelompok. Kosongkan jika individu.<br><strong>Catatan:</strong> Jika disetujui, akun untuk anggota akan dibuat otomatis dengan password bawaan: <strong>password123</strong>'))
                         ->schema([
                             Forms\Components\Repeater::make('members')
                                 ->relationship('members')
@@ -155,9 +155,6 @@ class MagangApplicationResource extends Resource
                                         ->label('Pilihan Bidang')
                                         ->placeholder('Pilih OPD terlebih dahulu')
                                         ->options(function (Forms\Get $get) {
-                                            // Ambil opd_id dari form induk (parent)
-                                            // Repeater ada di dalam card -> schema, jadi mungkin butuh ../..
-                                            // Debugging path bisa tricky. Kita coba simple approach dulu.
                                             $opdId = $get('../../opd_id');
                                             if (! $opdId) {
                                                 return [];
@@ -169,6 +166,8 @@ class MagangApplicationResource extends Resource
                                 ->columns(2)
                                 ->columnSpanFull()
                                 ->addActionLabel('Tambah Anggota')
+                                ->addable(fn () => auth()->user()->role !== 'admin_opd')
+                                ->deletable(fn () => auth()->user()->role !== 'admin_opd')
                         ])
                         ->visible(fn () => true),
                 ])->columns(2),

@@ -42,4 +42,9 @@ class Opd extends Model
     {
         return $this->hasMany(Berita::class);
     }
+
+    public function pesertas()
+    {
+        return $this->hasManyThrough(Peserta::class, Bidang::class);
+    }
 }

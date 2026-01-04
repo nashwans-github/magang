@@ -51,7 +51,7 @@
             <div class="lg:col-span-5 flex flex-col gap-6">
                 @if($instansi->documentation_images && is_array($instansi->documentation_images) && count($instansi->documentation_images) > 0)
                     @foreach($instansi->documentation_images as $img)
-                        <img src="{{ $img }}" alt="Dokumentasi" class="w-full h-64 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition duration-500">
+                        <img src="{{ asset('storage/' . $img) }}" alt="Dokumentasi" class="w-full h-64 object-cover rounded-3xl shadow-lg hover:scale-[1.02] transition duration-500">
                     @endforeach
                 @else
                      <div class="w-full h-64 bg-gray-100 dark:bg-gray-800 rounded-3xl flex items-center justify-center text-gray-400">

@@ -80,13 +80,13 @@ class SuratResource extends Resource
                         ->required(),
                     Forms\Components\DatePicker::make('issued_date')
                         ->label('Tanggal Terbit')
-                        ->required()
+                        // ->required() // Relaxed requirement for Peserta request
                         ->default(now())
-                        ->visible(fn () => auth()->user()->role !== 'peserta'), // User requests, Admin sets date?
+                        ->visible(fn () => auth()->user()->role !== 'peserta'), 
                     Forms\Components\FileUpload::make('file_path')
                         ->label('File Surat')
                         ->directory('surat-files')
-                        ->required(fn () => auth()->user()->role !== 'peserta') // Admin must upload
+                        ->required(fn () => auth()->user()->role !== 'peserta') // Admin must upload (if fulfilling)
                         ->visible(fn () => auth()->user()->role !== 'peserta') // User doesn't upload
                         ->columnSpanFull(),
                 ])->columns(2),

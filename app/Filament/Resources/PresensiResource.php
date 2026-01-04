@@ -139,6 +139,14 @@ class PresensiResource extends Resource
                     ->label('Keluar')
                     ->time()
                     ->visible(!$isAdminPembimbing),
+
+                Tables\Columns\IconColumn::make('view_proof_icon')
+                    ->label('Bukti')
+                    ->icon('heroicon-o-document-text')
+                    ->color(fn ($record) => $record->proof_file ? 'info' : 'gray')
+                    ->action('view_proof')
+                    ->tooltip(fn ($record) => $record->proof_file ? 'Lihat Bukti' : 'Tidak ada bukti')
+                    ->visible(!$isAdminPembimbing), // Visible in list view
                 
                 // Columns for Card View (Pembimbing)
                 Tables\Columns\TextColumn::make('status') // Last Status
@@ -187,6 +195,16 @@ class PresensiResource extends Resource
                     ->modalSubmitAction(false) // View only
                     ->modalCancelAction(fn ($action) => $action->label('Tutup'))
                     ->visible(fn () => auth()->user()->role === 'admin_pembimbing'),
+
+                // Action to View Proof (Bukti)
+                Tables\Actions\Action::make('view_proof')
+                    ->label('Lihat Bukti')
+                    ->icon('heroicon-o-document-magnifying-glass')
+                    ->color('info')
+                    ->modalHeading('Bukti Presensi')
+                    ->modalContent(fn ($record) => view('filament.tables.actions.proof-modal', ['record' => $record]))
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(fn ($action) => $action->label('Tutup')),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export_csv')
