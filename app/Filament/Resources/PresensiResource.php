@@ -89,19 +89,23 @@ class PresensiResource extends Resource
                     Forms\Components\DatePicker::make('date')
                         ->label('Tanggal')
                         ->required(),
-                    Forms\Components\TimePicker::make('check_in')
-                        ->label('Jam Masuk')
-                        ->required(),
-                    Forms\Components\TimePicker::make('check_out')
-                        ->label('Jam Keluar'),
-                     Forms\Components\Select::make('status')
+                    Forms\Components\Select::make('status')
                         ->options([
                             'hadir' => 'Hadir',
                             'sakit' => 'Sakit',
                             'izin' => 'Izin',
                             'alpa' => 'Alpha',
                         ])
-                        ->required(),
+                        ->required()
+                        ->live()
+                        ->default('hadir'),
+                    Forms\Components\TimePicker::make('check_in')
+                        ->label('Jam Masuk')
+                        ->required(fn (Forms\Get $get) => $get('status') === 'hadir')
+                        ->visible(fn (Forms\Get $get) => $get('status') === 'hadir'),
+                    Forms\Components\TimePicker::make('check_out')
+                        ->label('Jam Keluar')
+                        ->visible(fn (Forms\Get $get) => $get('status') === 'hadir'),
                     Forms\Components\Textarea::make('notes')
                         ->label('Keterangan'),
                 ])->columns(2),
