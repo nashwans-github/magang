@@ -32,8 +32,7 @@ class SuratResource extends Resource
 
     public static function canCreate(): bool
     {
-        return in_array(auth()->user()->role, ['peserta', 'admin_opd']); 
-        // Peserta requests (creates), Admin OPD also creates/validates
+        return in_array(auth()->user()->role, ['peserta']); 
     }
 
     public static function canEdit(Model $record): bool

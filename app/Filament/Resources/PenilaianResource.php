@@ -54,7 +54,7 @@ class PenilaianResource extends Resource
     public static function canViewAny(): bool
     {
         // Allow all Admins
-        if (in_array(auth()->user()->role, ['admin_pembimbing', 'admin_opd'])) {
+        if (in_array(auth()->user()->role, ['admin_pembimbing'])) {
             return true;
         }
         
