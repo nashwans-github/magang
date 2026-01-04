@@ -157,7 +157,7 @@ class MagangApplicationResource extends Resource
                                         ->required(),
                                     Forms\Components\Select::make('bidang_id')
                                         ->label('Pilihan Bidang')
-                                        ->placeholder('Pilih OPD terlebih dahulu')
+                                        ->placeholder('Pilih Bidang')
                                         ->options(function (Forms\Get $get) {
                                             $opdId = $get('../../opd_id');
                                             if (! $opdId) {
