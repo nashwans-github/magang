@@ -25,6 +25,22 @@ class BeritaResource extends Resource
     protected static ?string $navigationGroup = 'Konten Website';
     protected static ?int $navigationSort = 1;
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role === 'admin_opd') {
+            $query->where('opd_id', auth()->user()->opd_id);
+        } elseif (auth()->user()->role === 'peserta') {
+            $query->whereHas('opd.magangApplications', function ($q) {
+                $q->where('user_id', auth()->id())
+                  ->where('status', 'approved'); // Only show if accepted
+            });
+        }
+
+        return $query;
+    }
+
     public static function canViewAny(): bool
     {
         return in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'peserta']);

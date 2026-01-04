@@ -24,6 +24,17 @@ class BidangResource extends Resource
     protected static ?string $navigationGroup = 'Master Data';
     protected static ?int $navigationSort = 2;
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->role === 'admin_opd') {
+             $query->where('opd_id', auth()->user()->opd_id);
+        }
+
+        return $query;
+    }
+
     public static function canViewAny(): bool
     {
         return auth()->user()->role === 'admin_opd';
