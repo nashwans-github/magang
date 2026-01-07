@@ -167,10 +167,7 @@ class PesertaResource extends Resource
                     ->visible(fn () => auth()->user()->role === 'admin_opd'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()->role === 'admin_opd'),
-                ]),
+                //
             ]);
     }
 

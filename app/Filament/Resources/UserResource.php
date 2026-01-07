@@ -26,8 +26,7 @@ class UserResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return false; // Admin Pusat access removed as requested.
-        // Was: return auth()->user()->role === 'admin_pusat';
+        return auth()->user()->role === 'admin_pusat';
     }
 
     public static function form(Form $form): Form
@@ -53,27 +52,14 @@ class UserResource extends Resource
                         ->maxLength(255),
                     Forms\Components\Select::make('role')
                         ->label('Peran')
-                        ->options(function () {
-                            $user = auth()->user();
-                            if ($user->role === 'admin_pusat') {
-                                return [
-                                    'admin_pusat' => 'Admin Pusat',
-                                    'admin_opd' => 'Admin OPD',
-                                    // 'admin_pembimbing' removed for Admin Pusat
-                                    'tamu' => 'Tamu',
-                                    // 'pemohon' => 'Pemohon',
-                                    // 'peserta' => 'Peserta', 
-                                ];
-                            }
-                            return [
-                                'admin_pusat' => 'Admin Pusat',
-                                'admin_opd' => 'Admin OPD',
-                                'admin_pembimbing' => 'Admin Pembimbing',
-                                'tamu' => 'Tamu',
-                                'pemohon' => 'Pemohon',
-                                'peserta' => 'Peserta',
-                            ];
-                        })
+                        ->options([
+                            'admin_pusat' => 'Admin Pusat',
+                            'admin_opd' => 'Admin OPD',
+                            'admin_pembimbing' => 'Admin Pembimbing',
+                            'tamu' => 'Tamu',
+                            'pemohon' => 'Pemohon',
+                            'peserta' => 'Peserta',
+                        ])
                         ->required()
                         ->default('tamu')
                         ->live(),
@@ -109,30 +95,12 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(function ($record) {
-                        // Admin Pusat cannot edit Admin Pembimbing OR Peserta
-                        if (auth()->user()->role === 'admin_pusat') {
-                            if ($record->role === 'admin_pembimbing' || $record->role === 'peserta') {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }),
-                Tables\Actions\DeleteAction::make()
-                    ->visible(function ($record) {
-                        if (auth()->user()->role === 'admin_pusat') {
-                            if ($record->role === 'admin_pembimbing' || $record->role === 'peserta') {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()->role !== 'admin_pusat'),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
