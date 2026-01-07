@@ -145,8 +145,22 @@ class PesertaResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ])
+            ->groups([
+                Tables\Grouping\Group::make('magangApplication.institution_name')
+                    ->label('Instansi')
+                    ->collapsible()
+                    ->titlePrefixedWithLabel(false)
+                    ->visible(fn () => auth()->user()->role !== 'admin_pembimbing'),
+            ])
+            ->defaultGroup('magangApplication.institution_name')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('magang_application_id')
+                    ->relationship('magangApplication', 'institution_name')
+                    ->label('Asal Instansi')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn () => auth()->user()->role !== 'admin_pembimbing'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -160,7 +160,28 @@ class BeritaResource extends Resource
                 ])->space(0)->extraAttributes(['class' => 'rounded-xl overflow-hidden ring-1 ring-gray-950/5 dark:ring-white/10']),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('opd_id')
+                    ->label('OPD')
+                    ->relationship('opd', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'peserta'])),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from')->label('Dari Tanggal'),
+                        Forms\Components\DatePicker::make('date_until')->label('Sampai Tanggal'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()

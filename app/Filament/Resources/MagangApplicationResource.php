@@ -253,7 +253,19 @@ class MagangApplicationResource extends Resource
                     }),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('opd_id')
+                    ->label('Filter OPD')
+                    ->relationship('opd', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->visible(fn () => auth()->user()->role === 'admin_pusat'),
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending' => 'Menunggu',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

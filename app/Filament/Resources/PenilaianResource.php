@@ -123,32 +123,53 @@ class PenilaianResource extends Resource
                             ->label('Nilai Kehadiran')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                self::calculateFinalScore($set, $get);
+                            }),
                         Forms\Components\TextInput::make('discipline_score')
                             ->label('Nilai Kedisipilan')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                self::calculateFinalScore($set, $get);
+                            }),
                         Forms\Components\TextInput::make('task_completion_score')
                             ->label('Nilai Penyelesaian Tugas')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                self::calculateFinalScore($set, $get);
+                            }),
                         Forms\Components\TextInput::make('deadline_accuracy_score')
                             ->label('Nilai Ketepatan Waktu')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                self::calculateFinalScore($set, $get);
+                            }),
                         Forms\Components\TextInput::make('independence_score')
                             ->label('Nilai Kemandirian')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function ($state, Forms\Get $get, Forms\Set $set) {
+                                self::calculateFinalScore($set, $get);
+                            }),
                         Forms\Components\TextInput::make('final_score')
                             ->label('Nilai Akhir')
                             ->numeric()
                             ->maxValue(100)
-                            ->default(0),
+                            ->default(0)
+                            ->readOnly(),
                     ])->columns(2),
                     Forms\Components\Textarea::make('comments')
                         ->label('Komentar/Catatan')
@@ -190,7 +211,7 @@ class PenilaianResource extends Resource
                  Tables\Actions\Action::make('export_csv')
                     ->label('Export CSV')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'admin_pembimbing']))
+                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']))
                     ->action(function () {
                         return response()->streamDownload(function () {
                             $handle = fopen('php://output', 'w');
@@ -264,5 +285,18 @@ class PenilaianResource extends Resource
             'create' => Pages\CreatePenilaian::route('/create'),
             'edit' => Pages\EditPenilaian::route('/{record}/edit'),
         ];
+    }
+    protected static function calculateFinalScore(Forms\Set $set, Forms\Get $get): void
+    {
+        $attendance = intval($get('attendance_score'));
+        $discipline = intval($get('discipline_score'));
+        $task = intval($get('task_completion_score'));
+        $deadline = intval($get('deadline_accuracy_score'));
+        $independence = intval($get('independence_score'));
+
+        $total = $attendance + $discipline + $task + $deadline + $independence;
+        $average = $total > 0 ? $total / 5 : 0;
+
+        $set('final_score', round($average, 2));
     }
 }

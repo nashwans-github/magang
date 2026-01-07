@@ -143,6 +143,17 @@ class PresensiResource extends Resource
                     ->label('Keluar')
                     ->time()
                     ->visible(!$isAdminPembimbing),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'hadir' => 'success',
+                        'sakit' => 'warning',
+                        'izin' => 'info',
+                        'alpa' => 'danger',
+                        default => 'gray',
+                    })
+                    ->visible(!$isAdminPembimbing),
 
                 Tables\Columns\IconColumn::make('view_proof_icon')
                     ->label('Bukti')
@@ -172,17 +183,29 @@ class PresensiResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
                     ->options([
                         'hadir' => 'Hadir',
                         'sakit' => 'Sakit',
                         'izin' => 'Izin',
                         'alpa' => 'Alpha',
+                    ]),
+                Tables\Filters\Filter::make('date')
+                    ->form([
+                        Forms\Components\DatePicker::make('date_from')->label('Dari Tanggal'),
+                        Forms\Components\DatePicker::make('date_until')->label('Sampai Tanggal'),
                     ])
-                    ->visible(!$isAdminPembimbing), // Hide filter in card view or keep? Maybe confusing if filtered by status of latest record.
-                Tables\Filters\Filter::make('today')
-                    ->label('Hari Ini')
-                    ->query(fn (Builder $query): Builder => $query->whereDate('date', now()))
-                    ->visible(!$isAdminPembimbing),
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['date_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('date', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()->visible(!$isAdminPembimbing),
@@ -214,7 +237,10 @@ class PresensiResource extends Resource
                 Tables\Actions\Action::make('export_csv')
                     ->label('Export CSV')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd', 'admin_pembimbing']))
+                Tables\Actions\Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']))
                     ->action(function () {
                         return response()->streamDownload(function () {
                             $handle = fopen('php://output', 'w');
