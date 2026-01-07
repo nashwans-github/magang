@@ -237,9 +237,6 @@ class PresensiResource extends Resource
                 Tables\Actions\Action::make('export_csv')
                     ->label('Export CSV')
                     ->icon('heroicon-o-arrow-down-tray')
-                Tables\Actions\Action::make('export_csv')
-                    ->label('Export CSV')
-                    ->icon('heroicon-o-arrow-down-tray')
                     ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'admin_opd']))
                     ->action(function () {
                         return response()->streamDownload(function () {
