@@ -145,7 +145,6 @@ class PesertaResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ])
             ->groups([
                 Tables\Grouping\Group::make('magangApplication.institution_name')
                     ->label('Instansi')
