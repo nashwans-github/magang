@@ -165,7 +165,7 @@ class BeritaResource extends Resource
                     ->relationship('opd', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn () => in_array(auth()->user()->role, ['admin_pusat', 'peserta'])),
+                    ->visible(fn () => auth()->user()->role === 'admin_pusat'),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('date_from')->label('Dari Tanggal'),
