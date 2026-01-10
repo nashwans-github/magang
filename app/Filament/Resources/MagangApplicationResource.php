@@ -265,7 +265,8 @@ class MagangApplicationResource extends Resource
                         'pending' => 'Menunggu',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
-                    ]),
+                    ])
+                    ->visible(fn () => ! in_array(auth()->user()->role, ['pemohon', 'peserta'])),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from')->label('Tanggal Pengajuan Dari'),
@@ -281,7 +282,8 @@ class MagangApplicationResource extends Resource
                                 $data['created_until'],
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
-                    }),
+                    })
+                    ->visible(fn () => ! in_array(auth()->user()->role, ['pemohon', 'peserta'])),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
