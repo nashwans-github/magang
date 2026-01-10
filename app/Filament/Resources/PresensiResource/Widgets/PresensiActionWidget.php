@@ -63,6 +63,16 @@ class PresensiActionWidget extends Widget implements HasActions, HasForms
                 $user = auth()->user();
                 if ($user->role !== 'peserta') return;
 
+                // Cek Batas Waktu (16:00)
+                if (Carbon::now()->format('H:i') >= '16:00') {
+                     Notification::make()
+                        ->title('Batas waktu presensi (16:00) telah habis.')
+                        ->body('Anda dianggap Alpha untuk hari ini.')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+
                 $peserta = Peserta::where('user_id', $user->id)->orderBy('id', 'desc')->first();
                 if (! $peserta) {
                     Notification::make()->title('Data Peserta tidak ditemukan')->danger()->send();

@@ -215,7 +215,8 @@ class PenilaianResource extends Resource
                                 $data['created_until'],
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
-                    }),
+                    })
+                    ->visible(fn () => auth()->user()->role !== 'peserta'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(), // Added for everyone (including Peserta) to view details
