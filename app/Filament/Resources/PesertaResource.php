@@ -147,13 +147,13 @@ class PesertaResource extends Resource
             ])
             ->groups(
                 auth()->user()->role !== 'admin_pembimbing' ? [
-                    Tables\Grouping\Group::make('magangApplication.institution_name')
-                        ->label('Instansi')
+                    Tables\Grouping\Group::make('magang_application_id')
+                        ->label('Kelompok Magang')
                         ->collapsible()
-                        ->titlePrefixedWithLabel(false),
+                        ->getTitleFromRecordUsing(fn ($record) => $record->magangApplication->institution_name . ' - ' . $record->magangApplication->user->name),
                 ] : []
             )
-            ->defaultGroup(auth()->user()->role !== 'admin_pembimbing' ? 'magangApplication.institution_name' : null)
+            ->defaultGroup(auth()->user()->role !== 'admin_pembimbing' ? 'magang_application_id' : null)
             ->filters([
                 Tables\Filters\SelectFilter::make('magang_application_id')
                     ->relationship('magangApplication', 'institution_name')
@@ -161,6 +161,22 @@ class PesertaResource extends Resource
                     ->searchable()
                     ->preload()
                     ->visible(fn () => auth()->user()->role !== 'admin_pembimbing'),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Bergabung Dari'),
+                        Forms\Components\DatePicker::make('created_until')->label('Bergabung Sampai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

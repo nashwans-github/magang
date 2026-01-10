@@ -266,6 +266,22 @@ class MagangApplicationResource extends Resource
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
                     ]),
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Tanggal Pengajuan Dari'),
+                        Forms\Components\DatePicker::make('created_until')->label('Tanggal Pengajuan Sampai'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
